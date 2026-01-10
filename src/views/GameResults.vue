@@ -4,15 +4,13 @@ import { ref, onMounted } from "vue";
 import { fetchWithFallback } from "../data/fetch";
 import { matches as mockMatches } from "../data/mock/matches";
 import type { GetMatch } from "../data/matchModels";
+import { API_ENDPOINT } from "../data/consts";
 
 const matches = ref<GetMatch[]>([]);
+const endpoint = API_ENDPOINT + "/match";
 
-//replace localhost with actual api endpoint in prod
 onMounted(async () => {
-  matches.value = await fetchWithFallback<GetMatch[]>(
-    "http://localhost:8080/api/matches",
-    mockMatches,
-  );
+  matches.value = await fetchWithFallback<GetMatch[]>(endpoint, mockMatches);
 });
 </script>
 
@@ -23,7 +21,6 @@ onMounted(async () => {
     <table>
       <thead>
         <tr>
-          <th>ID</th>
           <th>Date</th>
           <th>Home</th>
           <th>Away</th>
@@ -34,7 +31,6 @@ onMounted(async () => {
       <!-- highlight winning team -->
       <tbody>
         <tr v-for="match in matches" :key="match.matchId">
-          <td>{{ match.matchId }}</td>
           <td>{{ match.matchDate }}</td>
           <td :class="{ winner: match.homeTeamScore > match.awayTeamScore }">
             {{ match.homeTeam }}

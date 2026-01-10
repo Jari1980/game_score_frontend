@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import type { CreateMatch } from "../data/matchModels";
 import { createMatch } from "../data/create";
+import { API_ENDPOINT } from "../data/consts";
 
 const form = ref<CreateMatch>({
   matchDate: "",
@@ -21,7 +22,8 @@ const submit = async () => {
     error.value = null;
     statusCode.value = null;
 
-    const status = await createMatch("/api/matches", form.value);
+    const endpoint = API_ENDPOINT + "/match";
+    const status = await createMatch(endpoint, form.value);
     statusCode.value = status;
   } catch (e: any) {
     error.value = e?.message ?? "Unknown error";
