@@ -1,13 +1,13 @@
-import type { CreateMatch } from "../data/matchModels";
+import type { CreateMatch } from '../data/matchModels';
 
 export async function createMatch(
   url: string,
-  payload: CreateMatch,
+  payload: CreateMatch
 ): Promise<number> {
   const response = await fetch(url, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
   });

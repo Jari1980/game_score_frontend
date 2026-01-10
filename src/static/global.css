@@ -2,45 +2,61 @@
 
 @theme {
   --color-primary: #d96946;
-  --color-dark: #0c3270;
+  --color-dark: #020617; /* darker tint, previously blue */
   --color-light: #ffffff;
-  --color-darker: #08234d;
+  --color-darker: #020617;
   --color-success: #39ab6b;
   --color-error: #e54448;
 }
 
 body {
-  background: var(--color-dark) url('/sportz-bg-orig.jpg') center center
-    no-repeat;
-  background-size: 1400px;
-  background-position: center bottom;
+  position: relative;
+  background: var(--color-dark);
   color: var(--color-light);
   font-family: 'Ubuntu', sans-serif;
   font-weight: 400;
   min-height: 100dvh;
+  overflow-x: hidden;
+}
 
-  &:has(.game-single) {
-    background-position: center bottom -100px;
-  }
+/* blurred, darkened background image */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.95)),
+    url('/jumping.jpg') center top no-repeat;
+  background-size: 1400px;
+  background-position: center top;
+  filter: blur(2px); /* larger = more blur */
+  opacity: 0.8; /*1 = no opacity*/
+  pointer-events: none;
+}
 
-  &:has(.register-page) {
-    .login-link {
-      text-decoration: underline;
-    }
-  }
+/* center from image top */
+body:has(.game-single)::before {
+  background-position: center top 100px;
+}
 
-  &:has(.login-page) {
-    .register-link {
-      text-decoration: underline;
-    }
-  }
+body:has(.register-page) .login-link {
+  text-decoration: underline;
+}
 
-  @media (min-width: 640px) {
+body:has(.login-page) .register-link {
+  text-decoration: underline;
+}
+
+@media (min-width: 640px) {
+  body::before {
     background-size: 1920px;
   }
+}
 
-  @media (min-width: 1920px) {
-    background-size: 100%;
+@media (min-width: 1920px) {
+  body::before {
+    background-size: 90%;
   }
 }
 
@@ -65,6 +81,7 @@ table {
   th,
   td {
     padding-bottom: 1rem;
+
     &:not(:last-child) {
       padding-right: 1.5rem;
     }

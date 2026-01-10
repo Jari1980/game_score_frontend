@@ -48,16 +48,29 @@ onMounted(async () => {
               <th>Score</th>
             </tr>
           </thead>
+
           <tbody>
             <tr v-for="match in matches" :key="match.matchId">
               <td>{{ match.matchDate }}</td>
               <td
-                :class="{ winner: match.homeTeamScore > match.awayTeamScore }"
+                :class="{
+                  'text-green-600 font-bold':
+                    match.homeTeamScore > match.awayTeamScore,
+                  'text-red-600 font-bold':
+                    match.homeTeamScore < match.awayTeamScore,
+                  'text-gray-500': match.homeTeamScore === match.awayTeamScore,
+                }"
               >
                 {{ match.homeTeam }}
               </td>
               <td
-                :class="{ winner: match.awayTeamScore > match.homeTeamScore }"
+                :class="{
+                  'text-green-600 font-bold':
+                    match.awayTeamScore > match.homeTeamScore,
+                  'text-red-600 font-bold':
+                    match.awayTeamScore < match.homeTeamScore,
+                  'text-gray-500': match.awayTeamScore === match.homeTeamScore,
+                }"
               >
                 {{ match.awayTeam }}
               </td>
