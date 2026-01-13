@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router';
 
 import { fetchWithFallback } from '../data/fetch';
 import { matches as mockMatches } from '../data/mock/matches';
+import { formatDate } from '../utils/general.ts';
 import type { GetMatch } from '../data/matchModels';
 import { API_ENDPOINT } from '../data/consts';
 import Modal from '../components/Modal.vue';
@@ -35,7 +36,7 @@ onMounted(async () => {
 <template>
   <div class="outer-scroll overflow-x-auto">
     <div
-      class="inner main-border p-10 games-list flex flex-col gap-6 flex-1 w-max min-w-[600px] mx-auto"
+      class="inner main-border bg-darker/60 p-10 games-list flex flex-col gap-6 flex-1 w-max min-w-[600px] mx-auto"
     >
       <h1 class="text-xl">My Games</h1>
       <div class="the-table">
@@ -51,25 +52,25 @@ onMounted(async () => {
 
           <tbody>
             <tr v-for="match in matches" :key="match.matchId">
-              <td>{{ match.matchDate }}</td>
+              <td>{{ formatDate(match.matchDate) }}</td>
               <td
                 :class="{
-                  'text-green-600 font-bold':
+                  'text-success font-bold':
                     match.homeTeamScore > match.awayTeamScore,
-                  'text-red-600 font-bold':
+                  'text-primary font-bold':
                     match.homeTeamScore < match.awayTeamScore,
-                  'text-gray-500': match.homeTeamScore === match.awayTeamScore,
+                  'text-secondary': match.homeTeamScore === match.awayTeamScore,
                 }"
               >
                 {{ match.homeTeam }}
               </td>
               <td
                 :class="{
-                  'text-green-600 font-bold':
+                  'text-success font-bold':
                     match.awayTeamScore > match.homeTeamScore,
-                  'text-red-600 font-bold':
+                  'text-primary font-bold':
                     match.awayTeamScore < match.homeTeamScore,
-                  'text-gray-500': match.awayTeamScore === match.homeTeamScore,
+                  'text-secondary': match.awayTeamScore === match.homeTeamScore,
                 }"
               >
                 {{ match.awayTeam }}

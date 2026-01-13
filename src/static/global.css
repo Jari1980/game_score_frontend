@@ -1,62 +1,28 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-primary: #d96946;
-  --color-dark: #020617; /* darker tint, previously blue */
+  --color-primary: #ed3028;
+  --color-secondary: #5c8199;
+  --color-dark: #0c3270;
   --color-light: #ffffff;
-  --color-darker: #020617;
-  --color-success: #39ab6b;
-  --color-error: #e54448;
+  --color-darker: #0c1626;
+  --color-success: #65e681;
+  --color-error: #ed3028;
 }
 
 body {
-  position: relative;
-  background: var(--color-dark);
+  background: var(--color-darker) url('/sportz-bg-darker.png') center center
+    no-repeat;
+  background-attachment: fixed;
+  background-size: 1000px;
+  background-position: center bottom;
   color: var(--color-light);
   font-family: 'Ubuntu', sans-serif;
   font-weight: 400;
   min-height: 100dvh;
-  overflow-x: hidden;
-}
 
-/* blurred, darkened background image */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(circle at top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.95)),
-    url('/jumping.jpg') center top no-repeat;
-  background-size: 1400px;
-  background-position: center top;
-  filter: blur(2px); /* larger = more blur */
-  opacity: 0.8; /*1 = no opacity*/
-  pointer-events: none;
-}
-
-/* center from image top */
-body:has(.game-single)::before {
-  background-position: center top 100px;
-}
-
-body:has(.register-page) .login-link {
-  text-decoration: underline;
-}
-
-body:has(.login-page) .register-link {
-  text-decoration: underline;
-}
-
-@media (min-width: 640px) {
-  body::before {
-    background-size: 1920px;
-  }
-}
-
-@media (min-width: 1920px) {
-  body::before {
-    background-size: 90%;
+  @media (min-width: 1000px) {
+    background-size: contain;
   }
 }
 
@@ -81,7 +47,6 @@ table {
   th,
   td {
     padding-bottom: 1rem;
-
     &:not(:last-child) {
       padding-right: 1.5rem;
     }
