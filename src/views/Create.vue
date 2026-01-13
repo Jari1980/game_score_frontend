@@ -45,12 +45,12 @@ const submit = async () => {
       </label>
 
       <label class="form-label">
-        Home team
+        Home team name
         <input v-model="form.homeTeam" class="text-input" type="text" />
       </label>
 
       <label class="form-label">
-        Away team
+        Away team name
         <input v-model="form.awayTeam" class="text-input" type="text" />
       </label>
 
