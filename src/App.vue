@@ -1,5 +1,3 @@
-<script setup lang="ts"></script>
-
 <template>
   <div class="flex flex-col gap-14 p-10">
     <div class="flex flex-col gap-6 w-max mx-auto items-center">
@@ -10,10 +8,7 @@
           alt="Sportz Scores Logo"
         />
       </router-link>
-      <nav class="nav flex gap-4">
-        <router-link to="/results">Games</router-link>
-        <router-link to="/results/create">New Game</router-link>
-      </nav>
+      <Header />
     </div>
 
     <router-view />
@@ -25,12 +20,8 @@
   </div>
 </template>
 
-<style scoped>
-nav .router-link-exact-active {
-  @apply no-underline;
-}
+<script setup lang="ts">
+import Header from './views/Header.vue';
+</script>
 
-nav a {
-  @apply underline;
-}
-</style>
+<style scoped></style>
