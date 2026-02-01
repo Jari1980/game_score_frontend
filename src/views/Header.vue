@@ -9,6 +9,7 @@
     </router-link>
     <div class="flex gap-4">
       <template v-if="authenticated">
+        <router-link to="/public-league">Public League</router-link>
         <router-link to="/results">Games</router-link>
         <router-link to="/results/create">New Game</router-link>
         <router-link to="/logout">Logout</router-link>
