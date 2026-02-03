@@ -1,5 +1,5 @@
 <template>
-  <nav class="nav flex flex-col items-center gap-6">
+  <nav class="nav flex flex-col items-center gap-6 w-full">
     <router-link to="/results">
       <img
         src="/sportz-scores-logo.svg"
@@ -7,7 +7,7 @@
         alt="Sportz Scores Logo"
       />
     </router-link>
-    <div class="flex gap-4">
+    <div class="links flex gap-4 w-full flex-wrap justify-center">
       <template v-if="authenticated">
         <router-link to="/public-league">Public League</router-link>
         <router-link to="/results">Games</router-link>

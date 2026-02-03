@@ -1,19 +1,22 @@
 <template>
   <div class="outer-scroll overflow-x-auto">
     <div
-      class="games-list main-border modal-static modal-overflow w-max public-league"
+      class="public-league main-border modal-static modal-overflow w-max min-h-100"
     >
       <h1 class="text-3xl">Public League</h1>
-
-      <section class="info" v-if="info">
+      <section v-if="info" class="info">
         <h2>Info</h2>
         <pre>{{ info }}</pre>
       </section>
+      <section
+        class="filter flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between"
+      >
+        <h2 class="font-bold">Filter by teams</h2>
 
-      <section class="filter mt-4">
-        <h2>Filter by teams</h2>
-
-        <form @submit.prevent="applyFilter">
+        <form
+          @submit.prevent="applyFilter"
+          class="flex flex-col sm:flex-row sm:items-center gap-4"
+        >
           <!-- All: query all public-league matches, unselects Team A–D -->
           <label class="all-toggle">
             <input
@@ -25,45 +28,58 @@
           </label>
 
           <!-- Team A–D multiselect, shift click to select >=1 -->
-          <select
-            v-model="selectedTeams"
-            class="team-select"
-            multiple
-            size="4"
-            @change="onTeamsChange"
-          >
-            <option value="Team A">Team A</option>
-            <option value="Team B">Team B</option>
-            <option value="Team C">Team C</option>
-            <option value="Team D">Team D</option>
-          </select>
+          <Select type="select">
+            <template #header="{ isOpen }">
+              <span :class="{ underline: !isOpen }">{{
+                selectedTeams.length
+                  ? `${selectedTeams.length} team(s) selected`
+                  : 'Select teams'
+              }}</span>
+            </template>
+            <template #body="{ toggleDropdown }">
+              <div class="flex flex-col gap-2">
+                <label
+                  v-for="team in availableTeams"
+                  :key="team"
+                  class="flex items-center gap-2 whitespace-nowrap"
+                >
+                  <input
+                    type="checkbox"
+                    :value="team"
+                    v-model="selectedTeams"
+                    @change="onTeamsChange"
+                  />
+                  {{ team }}
+                </label>
+              </div>
+            </template>
+          </Select>
 
           <button type="submit" class="button primary">Apply filter</button>
         </form>
-
-        <p v-if="!allSelected && selectedTeams.length" class="mt-2">
-          Showing matches for {{ selectedTeams.join(', ') }}.
-        </p>
-
-        <p
-          v-if="
-            !allSelected &&
-            selectedTeams.length &&
-            !visibleMatches.length &&
-            !filterError
-          "
-          class="mt-2"
-        >
-          No matches found for the selected teams.
-        </p>
-
-        <p v-if="filterError" class="error">
-          {{ filterError }}
-        </p>
       </section>
-
+      <hr />
       <!-- Single table: shows either all matches or filtered ones.
            Hidden when filter is active and returns empty. -->
+      <p v-if="!allSelected && selectedTeams.length">
+        Showing matches for {{ selectedTeams.join(', ') }}.
+      </p>
+
+      <p
+        v-if="
+          !allSelected &&
+          selectedTeams.length &&
+          !visibleMatches.length &&
+          !filterError
+        "
+        class="text-error"
+      >
+        No matches found for the selected teams.
+      </p>
+
+      <p v-if="filterError" class="text-error">
+        {{ filterError }}
+      </p>
       <div class="the-table" v-if="visibleMatches.length">
         <table class="w-full md:min-w-[600px]">
           <thead>
@@ -115,13 +131,22 @@
 import { ref, onMounted, computed } from 'vue';
 import { API_ENDPOINT } from '@/data/consts';
 import { formatDate } from '@/utils/general';
+import { matches as mockMatches } from '@/data/mock/matches';
+import Select from '@/components/Select.vue';
 
+// Constants
+const availableTeams = ['Team A', 'Team B', 'Team C', 'Team D'];
+
+// Refs
 const info = ref<unknown | null>(null);
-const matches = ref<any[]>([]);
+//const matches = ref<any[]>([]);
+const matches = ref<any[]>(mockMatches);
 const filteredMatches = ref<any[]>([]);
 const selectedTeams = ref<string[]>([]);
 const allSelected = ref(true);
 const filterError = ref<string | null>(null);
+
+// Methods
 
 async function loadInfo() {
   const res = await fetch(API_ENDPOINT);
@@ -196,45 +221,3 @@ onMounted(async () => {
   await Promise.all([loadInfo(), loadMatches()]);
 });
 </script>
-
-<style scoped>
-.public-league {
-  padding: 1.5rem;
-}
-.info,
-.teams,
-.filter {
-  margin-top: 1.5rem;
-}
-
-.filter form {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-}
-
-.all-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-/* dropdown styling */
-.team-select {
-  background-color: #000;
-  color: #fff;
-  border: 1px solid #fff;
-  padding: 0.25rem 0.5rem;
-  min-width: 8rem;
-}
-
-.team-select option {
-  background-color: #000;
-  color: #fff;
-}
-
-.error {
-  color: #c00;
-  margin-top: 0.5rem;
-}
-</style>
