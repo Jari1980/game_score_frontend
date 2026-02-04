@@ -4,10 +4,12 @@
       class="public-league main-border modal-static modal-overflow w-max min-h-100"
     >
       <h1 class="text-3xl">Public League</h1>
+
       <section v-if="info" class="info">
         <h2>Info</h2>
         <pre>{{ info }}</pre>
       </section>
+
       <section
         class="filter flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between"
       >
@@ -17,26 +19,18 @@
           @submit.prevent="applyFilter"
           class="flex flex-col sm:flex-row sm:items-center gap-4"
         >
-          <!-- All: query all public-league matches, unselects Team A–D -->
-          <label class="all-toggle">
-            <input
-              type="checkbox"
-              v-model="allSelected"
-              @change="onAllToggle"
-            />
-            All
-          </label>
-
-          <!-- Team A–D multiselect, shift click to select >=1 -->
+          <!-- Team A–D multiselect -->
           <Select type="select">
             <template #header="{ isOpen }">
-              <span :class="{ underline: !isOpen }">{{
-                selectedTeams.length
-                  ? `${selectedTeams.length} team(s) selected`
-                  : 'Select teams'
-              }}</span>
+              <span :class="{ underline: !isOpen }">
+                {{
+                  selectedTeams.length
+                    ? `${selectedTeams.length} team(s) selected`
+                    : 'Select teams'
+                }}
+              </span>
             </template>
-            <template #body="{ toggleDropdown }">
+            <template #body="">
               <div class="flex flex-col gap-2">
                 <label
                   v-for="team in availableTeams"
@@ -47,7 +41,6 @@
                     type="checkbox"
                     :value="team"
                     v-model="selectedTeams"
-                    @change="onTeamsChange"
                   />
                   {{ team }}
                 </label>
@@ -56,22 +49,27 @@
           </Select>
 
           <button type="submit" class="button primary">Apply filter</button>
+
+          <button
+            type="button"
+            class="button"
+            :disabled="isFilterCleared"
+            @click="clearFilter"
+          >
+            Clear filter
+          </button>
         </form>
       </section>
+
       <hr />
-      <!-- Single table: shows either all matches or filtered ones.
-           Hidden when filter is active and returns empty. -->
-      <p v-if="!allSelected && selectedTeams.length">
+
+      <!-- show selected teams in order of clicked -->
+      <p v-if="!isFilterCleared" class="text-sm">
         Showing matches for {{ selectedTeams.join(', ') }}.
       </p>
 
       <p
-        v-if="
-          !allSelected &&
-          selectedTeams.length &&
-          !visibleMatches.length &&
-          !filterError
-        "
+        v-if="!isFilterCleared && !visibleMatches.length && !filterError"
         class="text-error"
       >
         No matches found for the selected teams.
@@ -80,6 +78,7 @@
       <p v-if="filterError" class="text-error">
         {{ filterError }}
       </p>
+
       <div class="the-table" v-if="visibleMatches.length">
         <table class="w-full md:min-w-[600px]">
           <thead>
@@ -139,68 +138,47 @@ const availableTeams = ['Team A', 'Team B', 'Team C', 'Team D'];
 
 // Refs
 const info = ref<unknown | null>(null);
-//const matches = ref<any[]>([]);
 const matches = ref<any[]>(mockMatches);
 const filteredMatches = ref<any[]>([]);
 const selectedTeams = ref<string[]>([]);
-const allSelected = ref(true);
 const filterError = ref<string | null>(null);
 
-// Methods
+//filter cleared flag
+const isFilterCleared = computed(() => {
+  return selectedTeams.value.length === 0;
+});
 
-async function loadInfo() {
-  const res = await fetch(API_ENDPOINT);
-  if (!res.ok) return;
-  info.value = await res.json();
-}
+// filtered results
+const visibleMatches = computed(() => {
+  if (!isFilterCleared.value) {
+    return filteredMatches.value;
+  }
+  return matches.value;
+});
 
+// Load all public‑league matches
 async function loadMatches() {
   const res = await fetch(`${API_ENDPOINT}/public-league/matches`);
   if (!res.ok) return;
   matches.value = await res.json();
 }
 
-// clear Team A–D when All is toggled on
-function onAllToggle() {
-  if (allSelected.value) {
-    selectedTeams.value = [];
-    filteredMatches.value = [];
-  }
+function clearFilter() {
+  selectedTeams.value = [];
+  filteredMatches.value = [];
+  filterError.value = null;
 }
-
-// opposite of onAllToggle: turn off All when teams selected
-function onTeamsChange() {
-  if (selectedTeams.value.length > 0) {
-    allSelected.value = false;
-  }
-}
-
-// decide which list table should show
-const visibleMatches = computed(() => {
-  // Filtering mode: if All is off
-  if (!allSelected.value) {
-    //filter returns no results
-    if (filteredMatches.value.length === 0) {
-      return [];
-    }
-    return filteredMatches.value;
-  }
-
-  // "All" mode: show all matches
-  return matches.value;
-});
 
 async function applyFilter() {
   filterError.value = null;
   filteredMatches.value = [];
 
-  // query all
-  if (allSelected.value || selectedTeams.value.length === 0) {
+  // reload all matches when changed
+  if (isFilterCleared.value) {
     await loadMatches();
     return;
   }
 
-  // query Teams A–D
   const body = { teams: selectedTeams.value };
 
   const res = await fetch(`${API_ENDPOINT}/public-league/matches/filter`, {
@@ -218,6 +196,6 @@ async function applyFilter() {
 }
 
 onMounted(async () => {
-  await Promise.all([loadInfo(), loadMatches()]);
+  await Promise.all([loadMatches()]);
 });
 </script>
