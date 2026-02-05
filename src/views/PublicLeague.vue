@@ -48,15 +48,15 @@
             </template>
           </Select>
 
-          <button type="submit" class="button primary">Apply filter</button>
+          <button type="submit" class="button primary">Apply</button>
 
           <button
             type="button"
-            class="button"
+            class="button secondary"
             :disabled="isFilterCleared"
             @click="clearFilter"
           >
-            Clear filter
+            Clear
           </button>
         </form>
       </section>

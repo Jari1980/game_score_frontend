@@ -60,7 +60,9 @@ table {
 
 label,
 button {
-  cursor: pointer;
+  &:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 .text-input {
