@@ -1,4 +1,3 @@
-<!-- wrote my own form, replace with something like shadcn -->
 <template>
   <form class="match-form flex flex-col gap-12" @submit.prevent="submit">
     <div class="flex flex-col gap-4">
@@ -76,6 +75,7 @@ import { useRouter } from 'vue-router';
 import type { CreateMatch } from '@/data/matchModels';
 import { createMatch } from '@/data/create';
 import { API_ENDPOINT } from '@/data/consts';
+import { getAuthToken } from '@/data/auth';
 
 // Emits
 const emit = defineEmits<{
@@ -96,11 +96,18 @@ const error = ref<string | null>(null);
 
 // Methods
 const submit = async () => {
+  const token = getAuthToken();
+
+  if (!token) {
+    error.value = 'You must be logged in to create a match.';
+    return;
+  }
+
   try {
     submitting.value = true;
     error.value = null;
     const endpoint = API_ENDPOINT + '/match';
-    await createMatch(endpoint, form.value);
+    await createMatch(endpoint, form.value, token);
 
     // Emit event to parent to refetch data
     emit('match-created');
