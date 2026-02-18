@@ -12,18 +12,21 @@
       <template v-if="authenticated">
         <router-link to="/results">Games</router-link>
         <router-link to="/results/create">New Game</router-link>
-        <router-link to="/logout">Logout</router-link>
       </template>
       <template v-else>
         <router-link to="/login">Login</router-link>
         <router-link to="/register">Register</router-link>
       </template>
     </div>
+    <div v-if="authenticated" class="flex gap-2">
+      <span> Hi, {{ currentUser?.username }}! </span>
+      <router-link to="/logout">Logout</router-link>
+    </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { authenticated } from '@/data/auth';
+import { authenticated, currentUser } from '@/data/auth';
 </script>
 
 <style scoped>

@@ -75,6 +75,7 @@ import { useRouter } from 'vue-router';
 import type { CreateMatch } from '@/data/matchModels';
 import { createMatch } from '@/data/create';
 import { API_ENDPOINT } from '@/data/consts';
+import { getAuthToken } from '@/data/auth';
 
 // Emits
 const emit = defineEmits<{
@@ -93,13 +94,11 @@ const form = ref<CreateMatch>({
 const submitting = ref(false);
 const error = ref<string | null>(null);
 
-//get from token field in /login response body, store as global variable
-//need for view GameResults too
-const USER_TOKEN = 'PLACEHOLDER';
-
 // Methods
 const submit = async () => {
-  if (!USER_TOKEN) {
+  const token = getAuthToken();
+
+  if (!token) {
     error.value = 'You must be logged in to create a match.';
     return;
   }
@@ -108,7 +107,7 @@ const submit = async () => {
     submitting.value = true;
     error.value = null;
     const endpoint = API_ENDPOINT + '/match';
-    await createMatch(endpoint, form.value, USER_TOKEN);
+    await createMatch(endpoint, form.value, token);
 
     // Emit event to parent to refetch data
     emit('match-created');

@@ -1,7 +1,9 @@
 <template>
   <div class="outer-scroll overflow-x-auto">
     <div class="games-list main-border modal-static modal-overflow w-max">
-      <div class="actions-primary flex sm:justify-between items-center gap-6">
+      <div
+        class="actions-primary flex flex-col items-start sm:flex-row sm:justify-between sm:items-center gap-6"
+      >
         <h1 class="text-3xl">My Games</h1>
         <router-link to="/create" class="button primary">New Game</router-link>
       </div>
@@ -75,6 +77,7 @@ import { API_ENDPOINT } from '@/data/consts';
 import Modal from '@/components/Modal.vue';
 import type { GetMatch, BackendMatch } from '@/data/matchModels';
 import { transformMatch } from '@/data/matchModels';
+import { getAuthToken } from '@/data/auth';
 
 // Constants
 const endpoint = API_ENDPOINT + '/match';
@@ -103,7 +106,15 @@ const fetchMatches = async () => {
   try {
     error.value = null;
 
-    const response = await fetchWithFallback<BackendMatch[]>(endpoint, []);
+    const token = getAuthToken();
+    const headers: HeadersInit = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetchWithFallback<BackendMatch[]>(endpoint, [], {
+      headers,
+    });
     if (response.length > 0) {
       matches.value = response.map(transformMatch);
     } else {
