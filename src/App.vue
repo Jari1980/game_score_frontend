@@ -6,16 +6,26 @@
       </transition>
       <Header />
     </div>
+    <!-- Global popup for new matches -->
+    <NewMatchPopup />
     <router-view />
     <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
-import { provide, ref } from 'vue';
+import { provide, ref, onMounted } from 'vue';
 import Header from '@/views/Header.vue';
 import Toast from '@/views/Toast.vue';
 import Footer from '@/views/Footer.vue';
+import { useWebSocket } from '@/composables/useWebSocket';
+import NewMatchPopup from '@/components/NewMatchPopup.vue';
+
+//connecting websocket when app loads
+const { connect } = useWebSocket();
+onMounted(() => {
+  connect();
+});
 
 // Refs
 const toastMessage = ref('');
