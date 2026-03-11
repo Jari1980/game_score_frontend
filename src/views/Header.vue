@@ -12,6 +12,13 @@
       <template v-if="authenticated">
         <router-link to="/results">Games</router-link>
         <RouterLink to="/statistics">Statistics</RouterLink>
+        <span
+          v-if="isConnected"
+          class="flex items-center gap-2 ml-2 text-success text-sm"
+        >
+          <span class="w-3 h-3 rounded-full bg-success"></span>
+          Connected
+        </span>
       </template>
       <template v-else>
         <router-link to="/login">Login</router-link>
@@ -34,6 +41,8 @@
 
 <script setup lang="ts">
 import { authenticated, currentUser } from '@/data/auth';
+import { useWebSocket } from '@/composables/useWebSocket';
+const { isConnected } = useWebSocket();
 </script>
 
 <style scoped>
